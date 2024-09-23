@@ -217,28 +217,9 @@ pub fn decode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; Input
     result
 }
 
-fn main() {
-    // let message = "Hello World!";
-    // let message_bytes: [u8; 12] = message.as_bytes();
-    // println(message_bytes);
-    // let result: [u8; 16] = encode(message_bytes);
-
-    // let input: [u8; 1] = [47];
-    // let result: [u8;4] = encode(input);
-
-    // f
-    let input: [u8; 4] = [90, 103, 61, 61];
-    let expected: [u8; 1] = [102];
-    let result: [u8; 1] = decode(input);
-
-    // fo
-    let input: [u8; 4] = [90, 109, 56, 61];
-    let expected: [u8; 2] = [102, 111];
-    let result: [u8; 2] = decode(input);
-    // // foo
-    // let input: [u8; 4] = [90, 109, 57, 118];
-    // let expected: [u8; 3] = [102, 111, 111];
-    // let result = decode(input);
+fn main(input: str<44>, base64_bytes: [u8; 60]) {
+    let result:[u8; 60] = encode(input.as_bytes());
+    assert(result == base64_bytes);
 }
 
 #[test]
