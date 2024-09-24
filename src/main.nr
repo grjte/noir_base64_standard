@@ -165,17 +165,13 @@ pub fn decode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; Input
         // process the final chunk, which may contain padding
         let base64_offset = final_chunk * BASE64_PER_FIELD_ELEM;
         let byte_offset = final_chunk * BYTES_PER_FIELD_ELEM;
-        let mut num_final_base64 = InputBytes - base64_offset;
+        let num_final_base64 = InputBytes - base64_offset;
         let num_final_bytes = OutputBytes - byte_offset;
 
-        // remove the padding, if there is any
-        if (input_bytes[InputBytes - 1] == BASE64_PADDING_CHAR) {
-            num_final_base64 -= 1;
-        }
+        // enforce Base64 padding is valid
         if (input_bytes[InputBytes - 2] == BASE64_PADDING_CHAR) {
             // if a non-padding byte follows a padding byte, the base64 is invalid
             assert(input_bytes[InputBytes - 1] == BASE64_PADDING_CHAR);
-            num_final_base64 -= 1;
         }
 
         // pack the base64 values into the Field element
