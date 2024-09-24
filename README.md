@@ -11,7 +11,7 @@ Takes an arbitrary byte array as input, encodes it in Base64 according to the st
 Takes a utf-8 byte array that encodes a Base64 string and decodes it into bytes.
 
 ## Example usage
-(see tests in `lib.nr` or `fn main` for more examples)
+(see tests in `lib.nr` for more examples)
 
 ```
 fn encode_and_decode() {
