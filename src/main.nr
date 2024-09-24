@@ -73,65 +73,54 @@ pub fn encode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; Input
 
     if (num_chunks > 0) {
         let final_chunk = num_chunks - 1;
+        let mut slice: Field = 0;
 
         for i in 0..final_chunk {
             // pack the bytes into the Field element
-            let mut slice: Field = 0;
             for j in 0..BYTES_PER_FIELD_ELEM {
                 // shift by 8 bits
                 slice *= 256;
                 // add the byte value from the input
                 slice += input_bytes[i * BYTES_PER_FIELD_ELEM + j] as Field;
             }
+
             // extract the 6-bit values from the Field element
             let slice_6bits: [u8; BASE64_PER_FIELD_ELEM] = slice.to_be_radix(64);
-            // get the corresponding base64 values
             for j in 0..BASE64_PER_FIELD_ELEM {
                 result[i * BASE64_PER_FIELD_ELEM + j] = Base64Encoder.get(slice_6bits[j] as Field);
             }
+            // reset the field element
+            slice = 0;
         }
 
         // process the final chunk, which may require padding
-        let num_final_bytes = InputBytes - final_chunk * BYTES_PER_FIELD_ELEM;
-        let mut num_final_base64 = OutputBytes - (final_chunk * BASE64_PER_FIELD_ELEM);
         let byte_offset = final_chunk * BYTES_PER_FIELD_ELEM;
         let base64_offset = final_chunk * BASE64_PER_FIELD_ELEM;
+        let num_final_bytes = InputBytes - byte_offset;
+        let num_final_base64 = OutputBytes - base64_offset;
 
         // pack the bytes into the Field element
-        let mut slice: Field = 0;
         for j in 0..num_final_bytes {
-            // shift by 8 bits
             slice *= 256;
-            // add the byte value from the input
             slice += input_bytes[byte_offset + j] as Field;
         }
-
-        // if the last group is less than 3 bytes then pad the end of the base64 encoding and
-        // adjust the bit offset within the Field element so the 6-bit chunks will split correctly
-        let rem = InputBytes % 3;
-        if (rem == 1) {
-            // 1 final input byte ==> 2 base64 chars, 2 base64 padding
-            // 2 base64 chars is 12 bits, so adjust offset by 4 bits
-            slice *= 16;
-            // 2 padding characters
-            result[base64_offset + num_final_base64 - 1] = BASE64_PADDING_CHAR;
-            result[base64_offset + num_final_base64 - 2] = BASE64_PADDING_CHAR;
-            num_final_base64 -= 2;
-        } else if (rem == 2) {
-            // 2 final input bytes ==> 3 base64 chars, 1 base64 padding
-            // 3 base64 chars is 18 bits, so adjust offset by 2 bits
-            slice *= 4;
-            // 1 padding character
-            result[base64_offset + num_final_base64 - 1] = BASE64_PADDING_CHAR;
-            num_final_base64 -= 1;
+        for _ in num_final_bytes..BYTES_PER_FIELD_ELEM {
+            slice *= 256;
         }
 
         // extract the 6-bit values from the Field element
         let slice_6bits: [u8; BASE64_PER_FIELD_ELEM] = slice.to_be_radix(64);
-        // get the corresponding base64 values
-        let offset_6bits = BASE64_PER_FIELD_ELEM - num_final_base64;
         for j in 0..num_final_base64 {
-            result[base64_offset + j] = Base64Encoder.get(slice_6bits[offset_6bits + j] as Field);
+            result[base64_offset + j] = Base64Encoder.get(slice_6bits[j] as Field);
+        }
+
+        // handle padding
+        let rem = InputBytes % 3;
+        if (rem == 1) {
+            result[base64_offset + num_final_base64 - 1] = BASE64_PADDING_CHAR;
+            result[base64_offset + num_final_base64 - 2] = BASE64_PADDING_CHAR;
+        } else if (rem == 2) {
+            result[base64_offset + num_final_base64 - 1] = BASE64_PADDING_CHAR;
         }
     }
 
@@ -152,14 +141,14 @@ pub fn decode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; Input
 
     if num_chunks > 0 {
         let final_chunk = num_chunks - 1;
+        let mut slice: Field = 0;
 
         for i in 0..final_chunk {
             // pack the base64 values into the Field element
-            let mut slice: Field = 0;
             for j in 0..BASE64_PER_FIELD_ELEM {
                 // shift by 6 bits
                 slice *= 64;
-                // get the 6-bit value for this base64 element
+                // get the 6-bit value corresponding to this base64 element
                 let base64_6bit = Base64Decoder.get(input_bytes[i * BASE64_PER_FIELD_ELEM + j] as Field);
                 // add the 6-bit value to the Field element
                 slice += base64_6bit as Field;
@@ -169,42 +158,40 @@ pub fn decode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; Input
             for j in 0..BYTES_PER_FIELD_ELEM {
                 result[i*BYTES_PER_FIELD_ELEM + j] = slice_bytes[j];
             }
+            // reset the Field element
+            slice = 0;
         }
 
         // process the final chunk, which may contain padding
-        let mut num_final_base64 = InputBytes - (final_chunk * BASE64_PER_FIELD_ELEM);
-        let mut num_final_bytes = num_final_base64 / 4 * 3;
+        let base64_offset = final_chunk * BASE64_PER_FIELD_ELEM;
+        let byte_offset = final_chunk * BYTES_PER_FIELD_ELEM;
+        let mut num_final_base64 = InputBytes - base64_offset;
+        let num_final_bytes = OutputBytes - byte_offset;
+
         // remove the padding, if there is any
         if (input_bytes[InputBytes - 1] == BASE64_PADDING_CHAR) {
             num_final_base64 -= 1;
-            num_final_bytes -= 1;
         }
         if (input_bytes[InputBytes - 2] == BASE64_PADDING_CHAR) {
             // if a non-padding byte follows a padding byte, the base64 is invalid
             assert(input_bytes[InputBytes - 1] == BASE64_PADDING_CHAR);
             num_final_base64 -= 1;
-            num_final_bytes -= 1;
         }
 
         // pack the base64 values into the Field element
-        let mut slice: Field = 0;
         for j in 0..num_final_base64 {
-            // shift by 6 bits
             slice *= 64;
-            // get the 6-bit value for this base64 element
-            let base64_6bit = Base64Decoder.get(input_bytes[final_chunk * BASE64_PER_FIELD_ELEM + j] as Field);
-            // add the 6-bit value to the Field element
+            let base64_6bit = Base64Decoder.get(input_bytes[base64_offset + j] as Field);
             slice += base64_6bit as Field;
         }
-
-        // TODO: replace this by getting the offset in the slice_bytes
         for _ in num_final_base64..BASE64_PER_FIELD_ELEM {
             slice *= 64;
         }
+
         // extract the bytes from the Field element
         let slice_bytes: [u8; BYTES_PER_FIELD_ELEM] = slice.to_be_bytes();
         for j in 0..num_final_bytes {
-            result[final_chunk * BYTES_PER_FIELD_ELEM + j] = slice_bytes[j];
+            result[byte_offset + j] = slice_bytes[j];
         }
     }
 
