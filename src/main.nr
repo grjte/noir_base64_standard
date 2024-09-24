@@ -1,5 +1,20 @@
-///! Encodings use the standard alphabet specified in RFC 4648 
-///! (https://datatracker.ietf.org/doc/html/rfc4648#section-4)
+// Encodings use the standard alphabet specified in RFC 4648 
+// (https://datatracker.ietf.org/doc/html/rfc4648#section-4):
+//
+//    A 65-character subset of US-ASCII is used, enabling 6 bits to be
+//    represented per printable character.  (The extra 65th character, "=",
+//    is used to signify a special processing function.)
+// 
+//    The encoding process represents 24-bit groups of input bits as output
+//    strings of 4 encoded characters.  Proceeding from left to right, a
+//    24-bit input group is formed by concatenating 3 8-bit input groups.
+//    These 24 bits are then treated as 4 concatenated 6-bit groups, each
+//    of which is translated into a single character in the base 64
+//    alphabet.
+// 
+//    Each 6-bit group is used as an index into an array of 64 printable
+//    characters.  The character referenced by the index is placed in the
+//    output string.
 
 global BASE64_PADDING_CHAR: u8 = 61;
 // 240 bits fits 40 6-bit chunks and 30 8-bit chunks
@@ -14,6 +29,9 @@ struct Base64Encode {
 impl Base64Encode {
     fn new() -> Self {
         Base64Encode {
+            // The alphabet values here are standard UTF-8 (and ASCII) byte encodings, so the index
+            // in the table is the 6-bit Base64 value, and the value at that index is the UTF-8 
+            // encoding of that value.
             table: [
                 65, 66, 67, 68, 69, 70, 71, 72,// A, B, C, D, E, F, G, H
                 73, 74, 75, 76, 77, 78, 79, 80,// I, J, K, L, M, N, O, P
@@ -39,6 +57,8 @@ struct Base64Decode {
 impl Base64Decode {
     fn new() -> Self {
         Base64Decode {
+            // To decode an array of Base64 values that have been encoded as bytes using UTF-8
+            // encodings of the Base64 alphabet, UTF-8 must be mapped back to the corresponding Base64 6-bit values.
             table: [
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,// 0-19 (no mapping)
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,// 20-39 (no mapping)
@@ -65,6 +85,8 @@ impl Base64Decode {
 /// @brief Encode an array of arbitrary bytes as base64 values; return a base64-encoded byte array
 pub fn encode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; InputBytes]) -> [u8; OutputBytes] {
     let mut Base64Encoder = Base64Encode::new();
+    // TODO: once arithmetic ops on generics are supported, derive OutputBytes from InputBytes so it
+    // is correctly constrained.
     let mut result: [u8; OutputBytes] = [0; OutputBytes];
 
     // 240 bits fits 40 6-bit chunks and 30 8-bit chunks
@@ -133,6 +155,8 @@ pub fn decode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; Input
     assert(InputBytes % 4 == 0);
 
     let mut Base64Decoder = Base64Decode::new();
+    // TODO: once arithmetic ops on generics are supported, derive OutputBytes from InputBytes so it
+    // is correctly constrained.
     let mut result: [u8; OutputBytes] = [0; OutputBytes];
 
     // 240 bits fits 40 6-bit chunks and 30 8-bit chunks
