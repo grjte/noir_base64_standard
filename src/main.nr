@@ -219,8 +219,11 @@ pub fn decode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; Input
 }
 
 fn main(input: str<44>, base64_bytes: [u8; 60]) {
-    let result:[u8; 60] = encode(input.as_bytes());
-    assert(result == base64_bytes);
+    let encoded:[u8; 60] = encode(input.as_bytes());
+    assert(encoded == base64_bytes);
+
+    let decoded: [u8; 44] = decode(encoded);
+    assert(decoded == input.as_bytes());
 }
 
 #[test]
