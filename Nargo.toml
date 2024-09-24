@@ -1,7 +1,7 @@
 [package]
-name = "base64_standard"
-type = "bin"
-authors = [""]
+name = "noir_base64_standard"
+type = "lib"
+authors = ["grjte"]
 compiler_version = ">=0.34.0"
 
 [dependencies]

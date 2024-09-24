@@ -1,7 +1,6 @@
 # base64_standard
 
-Base64 encoding/decoding in Noir using the standard Base64 alphabet. This was written as a binary rather than a library for ease of testing & demonstration, but
-could be easily converted.
+A Base64 encoding/decoding library written in Noir which can encode arbitrary byte arrays and decode UTF-8 byte arrays that encode Base64 strings (e.g. `"SGVsbG8gV29ybGQ=".as_bytes()`).
 
 ## Usage
 
