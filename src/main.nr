@@ -227,6 +227,18 @@ fn main(input: str<44>, base64_bytes: [u8; 60]) {
 }
 
 #[test]
+fn encode_and_decode() {
+    let input: str<88> = "The quick brown fox jumps over the lazy dog, while 42 ravens perch atop a rusty mailbox.";
+    let base64_encoded = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZywgd2hpbGUgNDIgcmF2ZW5zIHBlcmNoIGF0b3AgYSBydXN0eSBtYWlsYm94Lg==";
+
+    let encoded:[u8; 120] = encode(input.as_bytes());
+    assert(encoded == base64_encoded.as_bytes());
+
+    let decoded: [u8; 88] = decode(encoded);
+    assert(decoded == input.as_bytes());
+}
+
+#[test]
 fn test_encode_empty() {
     let input: [u8; 0] = [];
     let result = encode(input);
