@@ -218,14 +218,6 @@ pub fn decode<let InputBytes: u32, let OutputBytes: u32>(input_bytes: [u8; Input
     result
 }
 
-fn main(input: str<44>, base64_bytes: [u8; 60]) {
-    let encoded:[u8; 60] = encode(input.as_bytes());
-    assert(encoded == base64_bytes);
-
-    let decoded: [u8; 44] = decode(encoded);
-    assert(decoded == input.as_bytes());
-}
-
 #[test]
 fn encode_and_decode() {
     let input: str<88> = "The quick brown fox jumps over the lazy dog, while 42 ravens perch atop a rusty mailbox.";
