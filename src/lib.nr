@@ -17,10 +17,16 @@
 //    output string.
 
 mod encoder;
-pub use encoder::{STANDARD_ENCODER, URL_SAFE_ENCODER};
+pub use encoder::{
+    STANDARD as ENCODER_STANDARD, STANDARD_NO_PAD as ENCODER_STANDARD_NO_PAD,
+    URL_SAFE as ENCODER_URL_SAFE, URL_SAFE_NO_PAD as ENCODER_URL_SAFE_NO_PAD
+};
 
 mod decoder;
-pub use decoder::{STANDARD_DECODER, URL_SAFE_DECODER};
+pub use decoder::{
+    STANDARD as DECODER_STANDARD, STANDARD_NO_PAD as DECODER_STANDARD_NO_PAD,
+    URL_SAFE as DECODER_URL_SAFE, URL_SAFE_NO_PAD as DECODER_URL_SAFE_NO_PAD
+};
 
 mod defaults {
     global BASE64_PADDING_CHAR: u8 = 61;
@@ -35,9 +41,9 @@ fn encode_and_decode() {
     let input: str<88> = "The quick brown fox jumps over the lazy dog, while 42 ravens perch atop a rusty mailbox.";
     let base64_encoded = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZywgd2hpbGUgNDIgcmF2ZW5zIHBlcmNoIGF0b3AgYSBydXN0eSBtYWlsYm94Lg==";
 
-    let encoded:[u8; 120] = STANDARD_ENCODER.encode(input.as_bytes());
+    let encoded:[u8; 120] = ENCODER_STANDARD.encode(input.as_bytes());
     assert(encoded == base64_encoded.as_bytes());
 
-    let decoded: [u8; 88] = STANDARD_DECODER.decode(encoded);
+    let decoded: [u8; 88] = DECODER_STANDARD.decode(encoded);
     assert(decoded == input.as_bytes());
 }
