@@ -54,7 +54,7 @@ impl Base64Decode {
                 23, 24, 25,// 65-90 (A-Z)
                 INVALID_VALUE, INVALID_VALUE, INVALID_VALUE, INVALID_VALUE,// 91-94 (no mapping)
                 63,// 95 (_)
-                0,// 96 (no mapping)
+                INVALID_VALUE,// 96 (no mapping)
                 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46,
                 47, 48, 49, 50, 51// 97-122 (a-z)
             ],
