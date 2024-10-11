@@ -1,5 +1,5 @@
-// Encodings use the standard alphabet specified in RFC 4648 
-// (https://datatracker.ietf.org/doc/html/rfc4648#section-4):
+// Encodings use the alphabets and padding rules specified in RFC 4648 
+// (https://datatracker.ietf.org/doc/html/rfc4648:
 //
 //    A 65-character subset of US-ASCII is used, enabling 6 bits to be
 //    represented per printable character.  (The extra 65th character, "=",
