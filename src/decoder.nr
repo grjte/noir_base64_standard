@@ -6,9 +6,10 @@ global STANDARD_NO_PAD = Base64Decode::new(false);
 global URL_SAFE_NO_PAD = Base64Decode::base64url(false);
 
 global INVALID_VALUE: u8 = 255;
+global DECODE_TABLE_SIZE = 123;
 
 struct Base64Decode {
-    table: [u8; 123],
+    table: [u8; DECODE_TABLE_SIZE],
     pad: bool
 }
 
@@ -63,7 +64,11 @@ impl Base64Decode {
     }
 
     fn get(self, idx: Field) -> u8 {
-        self.table[idx]
+        let mut value = INVALID_VALUE;
+        if (idx as u8) < DECODE_TABLE_SIZE {
+            value = self.table[idx];
+        }
+        value
     }
 
     /// @brief Decode a byte array representing base64 values back to raw bytes
@@ -397,4 +402,10 @@ fn test_decode_url_safe_no_pad_fail_with_padding() {
     let expected:[u8; 2] = [255, 224];
     let result: [u8; 2] = URL_SAFE_NO_PAD.decode(input);
     assert(result == expected);
+}
+
+#[test(should_fail_with="DecodeError: invalid symbol 255, offset 0")]
+fn test_decode_invalid() {
+    let input: [u8; 1] = [255];
+    let _: [u8; 0] = STANDARD_NO_PAD.decode(input);
 }
