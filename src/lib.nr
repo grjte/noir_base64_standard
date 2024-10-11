@@ -47,3 +47,15 @@ fn encode_and_decode() {
     let decoded: [u8; 88] = DECODER_STANDARD.decode(encoded);
     assert(decoded == input.as_bytes());
 }
+
+#[test]
+fn encode_and_decode_no_pad() {
+    let input: str<88> = "The quick brown fox jumps over the lazy dog, while 42 ravens perch atop a rusty mailbox.";
+    let base64_encoded = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZywgd2hpbGUgNDIgcmF2ZW5zIHBlcmNoIGF0b3AgYSBydXN0eSBtYWlsYm94Lg";
+
+    let encoded:[u8; 118] = ENCODER_STANDARD_NO_PAD.encode(input.as_bytes());
+    assert(encoded == base64_encoded.as_bytes());
+
+    let decoded: [u8; 88] = DECODER_STANDARD_NO_PAD.decode(encoded);
+    assert(decoded == input.as_bytes());
+}
