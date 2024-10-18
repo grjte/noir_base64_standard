@@ -1,9 +1,9 @@
 use super::defaults::{BASE64_PADDING_CHAR, BASE64_PER_FIELD_ELEM, BYTES_PER_FIELD_ELEM};
 
-global STANDARD = Base64Decode::new(true);
-global URL_SAFE = Base64Decode::base64url(true);
-global STANDARD_NO_PAD = Base64Decode::new(false);
-global URL_SAFE_NO_PAD = Base64Decode::base64url(false);
+pub global STANDARD = Base64Decode::new(true);
+pub global STANDARD_NO_PAD = Base64Decode::new(false);
+pub global URL_SAFE = Base64Decode::base64url(true);
+pub global URL_SAFE_NO_PAD = Base64Decode::base64url(false);
 
 global INVALID_VALUE: u8 = 255;
 global DECODE_TABLE_SIZE = 123;
@@ -65,7 +65,7 @@ impl Base64Decode {
 
     fn get(self, idx: Field) -> u8 {
         let mut value = INVALID_VALUE;
-        if (idx as u8) < DECODE_TABLE_SIZE {
+        if (idx as u32) < DECODE_TABLE_SIZE {
             value = self.table[idx];
         }
         value
@@ -239,7 +239,7 @@ fn test_decode_utf8() {
     let input: [u8; 36] = [
         52, 52, 71, 84, 52, 52, 75, 84, 52, 52, 71, 114, 52, 52, 71, 104, 52, 52, 71, 118, 52, 52, 67, 66, 53, 76, 105, 87, 53, 53, 87, 77, 55, 55, 121, 66
     ];
-    // non-ascii utf-8: "Hello, World!" in Japanese: "こんにちは、世界！"
+    // non-ascii utf-8: "Hello, World!" in Japanese
     let expected: [u8; 27] = [
         227, 129, 147, 227, 130, 147, 227, 129, 171, 227, 129, 161, 227, 129, 175, 227, 128, 129, 228, 184, 150, 231, 149, 140, 239, 188, 129
     ];

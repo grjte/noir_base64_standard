@@ -28,12 +28,12 @@ pub use decoder::{
     URL_SAFE as DECODER_URL_SAFE, URL_SAFE_NO_PAD as DECODER_URL_SAFE_NO_PAD
 };
 
-mod defaults {
-    global BASE64_PADDING_CHAR: u8 = 61;
+pub(crate) mod defaults {
+    pub(crate) global BASE64_PADDING_CHAR: u8 = 61;
     // 240 bits fits 40 6-bit chunks and 30 8-bit chunks
     // we pack 40 base64 values into a field element and convert into 30 bytes
-    global BASE64_PER_FIELD_ELEM: u32 = 40;
-    global BYTES_PER_FIELD_ELEM: u32 = 30;
+    pub(crate) global BASE64_PER_FIELD_ELEM: u32 = 40;
+    pub(crate) global BYTES_PER_FIELD_ELEM: u32 = 30;
 }
 
 #[test]

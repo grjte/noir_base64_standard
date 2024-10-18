@@ -17,10 +17,10 @@
 //    output string.
 use super::defaults::{BASE64_PADDING_CHAR, BASE64_PER_FIELD_ELEM, BYTES_PER_FIELD_ELEM};
 
-global STANDARD = Base64Encode::new(true);
-global STANDARD_NO_PAD = Base64Encode::new(false);
-global URL_SAFE = Base64Encode::base64url(true);
-global URL_SAFE_NO_PAD  = Base64Encode::base64url(false);
+pub global STANDARD = Base64Encode::new(true);
+pub global STANDARD_NO_PAD = Base64Encode::new(false);
+pub global URL_SAFE = Base64Encode::base64url(true);
+pub global URL_SAFE_NO_PAD  = Base64Encode::base64url(false);
 
 struct Base64Encode {
     table: [u8; 64],
@@ -239,7 +239,7 @@ fn test_encode_ascii() {
 
 #[test]
 fn test_encode_utf8() {
-    // non-ascii utf-8: "Hello, World!" in Japanese: "こんにちは、世界！"
+    // non-ascii utf-8: "Hello, World!" in Japanese
     let input: [u8; 27] = [
         227, 129, 147, 227, 130, 147, 227, 129, 171, 227, 129, 161, 227, 129, 175, 227, 128, 129, 228, 184, 150, 231, 149, 140, 239, 188, 129
     ];
